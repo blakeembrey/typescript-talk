@@ -1,0 +1,48 @@
+{
+  "name": "typescript-talk",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "js": "browserify -p [ tsify --noImplicitAny ] app/main.ts -o build/bundle.js",
+    "html": "html-minifier app/main.html -o build/index.html",
+    "css": "cleancss --skip-rebase app/main.css -o build/bundle.css",
+    "images": "imagemin assets build",
+    "copy": "cp -r assets build && mkdir -p build/reveal.js && cp -r node_modules/reveal.js/{lib,plugin,css} build/reveal.js && cp -r build/reveal.js/lib/font/source-sans-pro/ build/",
+    "clear": "rm -rf build",
+    "assets": "npm run copy && npm run images",
+    "build": "npm run clear && npm run assets && npm run js && npm run html && npm run css",
+    "build-watch": "npm run clear && npm run build && concurrent \"onchange assets/**/* -v -- npm run assets\" \"onchange app/**/*.ts -v -- npm run js\" \"onchange app/**/*.css -v -- npm run css\" \"onchange app/**/*.html -v -- npm run html\"",
+    "start": "concurrent \"http-server build\" \"open http://localhost:8080\"",
+    "start-watch": "concurrent \"npm run build-watch\" \"npm run start\"",
+    "deploy": "npm run build && cd build && git init . && git add . && git commit -m \"Deploy\"; git push \"git@github.com:blakeembrey/typescript-talk.git\" master:gh-pages --force && rm -rf .git"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/blakeembrey/typescript-talk"
+  },
+  "keywords": [
+    "typescript",
+    "talk",
+    "presentation",
+    "intro",
+    "types"
+  ],
+  "author": "Blake Embrey <hello@blakeembrey.com>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/blakeembrey/typescript-talk/issues"
+  },
+  "homepage": "https://github.com/blakeembrey/typescript-talk",
+  "devDependencies": {
+    "browserify": "^13.0.0",
+    "clean-css": "^3.4.9",
+    "concurrently": "^1.0.0",
+    "html-minifier": "^1.1.1",
+    "http-server": "^0.8.5",
+    "imagemin-cli": "^2.1.0",
+    "onchange": "^2.0.0",
+    "reveal.js": "^3.2.0",
+    "tsify": "^0.13.2"
+  }
+}
