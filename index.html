@@ -1,0 +1,1088 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+
+    <title>TypeScript</title>
+
+    <meta name="description" content="TypeScript presentation, based on Reveal.js">
+    <meta name="author" content="Blake Embrey">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,minimal-ui">
+
+    <link rel="stylesheet" href="bundle.css">
+
+    <!-- Printing and PDF exports -->
+    <script>
+      var link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      link.href = window.location.search.match(/print-pdf/gi) ? 'reveal.js/css/print/pdf.css' : 'reveal.js/css/print/paper.css';
+      document.getElementsByTagName('head')[0].appendChild(link);
+    </script>
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <h1>TypeScript</h1>
+          <p>
+            <small>Presented by <a href="http://blakeembrey.me">Blake Embrey</a></small>
+          </p>
+          <p>
+            <small>Mirror: <a href="https://blakeembrey.github.io/typescript-talk/">https://blakeembrey.github.io/typescript-talk/</a></small>
+          </p>
+        </section>
+
+        <section>
+          <h2>Who Am I?</h2>
+          <p data-markdown>
+            I'm a software engineer at [MuleSoft](https://www.mulesoft.com/). I've been working with TypeScript over the last year, largely alongside the community as a member of [TypeStrong](https://github.com/TypeStrong), maintainer of [TSD](https://github.com/DefinitelyTyped/tsd), and author of [Typings](https://github.com/typings/typings) and [`ts-node`](https://github.com/TypeStrong/ts-node).
+          </p>
+          <p data-markdown>
+            **@blakeembrey** on [Twitter](https://twitter.com/blakeembrey) and [GitHub](http://github.com/blakeembrey)
+          </p>
+
+          <aside class="notes">
+            * MuleSoft
+            * Open source author
+            * Author of `ts-node` and Typings
+            * Maintainer of TSD
+            * Member of TypeStrong
+          </aside>
+        </section>
+
+        <section>
+          <section>
+            <h2>Setting Up</h2>
+
+            <p data-markdown>
+              * Learning TypeScript - [https://github.com/TypeStrong/learn-typescript](https://github.com/TypeStrong/learn-typescript)
+              * TypeScript Playground - [http://www.typescriptlang.org/Playground](http://www.typescriptlang.org/Playground)
+              * `npm install -g typescript`
+              * `npm install -g typings`
+            </p>
+          </section>
+
+          <section>
+            <h2>Follow Along</h2>
+
+            <p data-markdown>
+              * [Atom](https://atom.io/) + [`atom-typescript`](https://github.com/TypeStrong/atom-typescript)
+              * [Sublime Text](https://www.sublimetext.com/) + [TypeScript Sublime Plugin](https://github.com/Microsoft/TypeScript-Sublime-Plugin)
+              * [VSCode](https://code.visualstudio.com/)
+              * Others...
+
+              ```sh
+              mkdir learning-typescript
+              cd learning-typescript
+              touch tsconfig.json
+              touch index.ts
+              npm install typescript -S
+              ```
+            </p>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h2>Context</h2>
+            <p>TypeScript is a typed superset of JavaScript, and compiles to plain JavaScript.</p>
+            <aside class="notes">
+              * Compile-to-JS language
+              * Typed superset
+              * Always run by a JavaScript runtime
+          </aside></section>
+
+          <section>
+            <h2>TypeScript Goals</h2>
+            <p data-markdown>
+              TypeScript has a well defined page for [design goals](https://github.com/Microsoft/TypeScript/wiki/TypeScript-Design-Goals), which boils down to the following points:
+
+              * Provide a _structural_ type system for JavaScript
+              * Support current and future ECMAScript standards
+            </p>
+          </section>
+
+          <section>
+            <h2>But Why?</h2>
+            <p data-markdown>
+              Type system make programs easier to comprehend and improve the overall code quality.
+
+              * Types improve the productivity of developers during refactors
+              * Types provide a documentation layer, cleanly defining the interface of inputs and outputs
+            </p>
+          </section>
+
+          <section>
+            <h2>What Type System?</h2>
+
+            <p data-markdown style="font-size:75%">
+              TypeScript's type system provides a low barrier of entry into the typed world.
+
+              * JavaScript is valid TypeScript - it's strictly a superset of JavaScript, so renaming your JavaScript files to `.ts` will start type checking.
+              * TypeScript will infer type information from the flow of the program (E.g. it knows `var x = 10` is a number).
+              * TypeScript is enhanced with explicit type information, following a postfix annotation syntax (E.g. `var x: number = 10`).
+              * The type system is structural. Type assignability is determined by comparing the types using intuitive assignability rules.
+              * TypeScript does not block JavaScript from emitting on type errors (by default).
+              * TypeScript has a method of interop with existing JavaScript libraries, and can even make them typed.
+              * Opt-in to a sticter TypeScript. Eventually, you can opt-out of the loose features as you get more familiar.
+            </p>
+          </section>
+
+          <section>
+            <h2>Future JavaScript, Today</h2>
+
+            <p data-markdown>
+              TypeScript supports all of ES6 (ES2015), as well as some ES7 features. A subset of features even emit to ES5, and you can combine with other transpilers (E.g. Babel) to emit more down-levelled features.
+            </p>
+          </section>
+
+          <section>
+            <h2>TypeScript Definitions</h2>
+
+            <p data-markdown>
+              TypeScript can consume, and emit, definition files (also known as `.d.ts` files). These files provide a mechanism of splitting the type system from the JavaScript runtime, so JavaScript users can consume `.js` while TypeScript users consume the type system mirrored in `.d.ts` files - progressive enhancement FTW.
+            </p>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h2>Projects</h2>
+
+            <p data-markdown>
+              TypeScript projects have the concept of a compilation context, usually managed through `tsconfig.json`.
+            </p>
+          </section>
+
+          <section>
+            <h2 data-markdown>`tsconfig.json`</h2>
+
+            <p data-markdown>
+              TSConfig files are automatically loaded by the TypeScript compiler (`tsc`) when no files or options are specified. 99% of the time, you will want to use `tsconfig.json` to get the benefits of a consistent project across compilers and editors.
+            </p>
+
+          </section>
+
+          <section>
+            <h2 data-markdown>Empty `tsconfig.json`</h2>
+
+            <p data-markdown>
+              An empty `tsconfig.json` is valid. This will use the default compiler options and will compile every `.tsx?` file in the current directory.
+            </p>
+          </section>
+
+          <section>
+            <h2>Compiler Options</h2>
+
+            <p data-markdown style="font-size:80%">
+              * `noImplicitAny` - Enforces a stricter TypeScript, it'll start warning when `any` is implied as the type.
+              * `sourceMap` - Generate `.js.map` files for debugging.
+              * `declaration` - Generate the `.d.ts` files alongside JavaScript files, a must for module authors.
+              * `module` - Specify the module format you'll be using (`commonjs`, `amd`, `system`, `umd`, `es6`).
+              * `outDir` - Write all output to a separate directory
+              * `target` - Specify the ECMAScript version output (`es3`, `es5`, `es6`).
+              * `moduleResolution` - Override how modules will be automatically resolved (`node` or `classic`).
+              * `jsx` - Support code generation from `.tsx` files (`preserve` or `react`).
+              * `noLib` - Exclude the default type library.
+              * `outFile` - Concatenate and emit output as a single file.
+              * And [many more](https://github.com/Microsoft/TypeScript/wiki/Compiler-Options)...
+            </p>
+
+            <aside class="notes" data-markdown>
+              The most useful part of configuration is tuning the TypeScript compiler. There are many compiler options, which you can read about more on the [TypeScript wiki](https://github.com/Microsoft/TypeScript/wiki/Compiler-Options), but here's the essentials.
+            </aside>
+          </section>
+
+          <section>
+            <h2 data-markdown>`tsconfig.json` Files</h2>
+
+            <p data-markdown>
+              The `files` array can be used to set entry points for compiler.
+
+              ```json
+              {
+                "files": [
+                  "src/index.ts",
+                  "typings/main.d.ts"
+                ]
+              }
+              ```
+            </p>
+          </section>
+
+          <section>
+            <h2 data-markdown>`tsconfig.json` Exclude</h2>
+
+            <p data-markdown>
+              The logical inverse of `files`, this flips compilation to find everything but ignore the files and folders under `exclude`.
+
+              ```json
+              {
+                "exclude": [
+                  "node_modules"
+                ]
+              }
+              ```
+
+              **Tip:** You can only use `files` or `exclude`, not both. I recommend building a whitelist with `files` over using `exclude`.
+            </p>
+          </section>
+
+          <section>
+            <h2>Declaration Spaces</h2>
+
+            <p data-markdown>
+              Using TypeScript, type declarations and variable declarations are combined in a single file (`.tsx?`). Type declarations and variables **can not** mix, doing so is an error.
+
+              Interfaces and types produce the type declarations, which are used at compilation time only. The runtime side of things is regular JavaScript in the output. Some constructs generate both a type interface and JavaScript.
+
+              **Tip:** TypeScript classes generate JavaScript, an instance interface and a constructor interface. To get the type of the variable, use `typeof ClassName`.
+            </p>
+          </section>
+
+          <section>
+            <h2>Modules</h2>
+
+            <p data-markdown>
+              Files you create are considered "global" until you use `import` or `export`. Once TypeScript sees `import` or `export`, the compilation context is switched to be a "file". Without this, TypeScript will use the file to populate the global type namespace (E.g. `window`).
+            </p>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h2>The Type System</h2>
+
+            <p data-markdown>
+              TypeScript uses postfix type annotations to denote types of values. This can be used with variables, function parameters, function return types, class property types, and more.
+            </p>
+          </section>
+
+          <section>
+            <h2>Basic Types</h2>
+
+            <p data-markdown>
+              * `string` - Primitive JavaScript string.
+              * `number` - Primitive JavaScript number.
+              * `boolean` - Primitive JavaScript boolean.
+              * `any` - Could be anything (a.k.a. unknown).
+              * `any[]` - Typed array (of `any`).
+              * `void` - No type (E.g. `undefined`).
+              * `() => any` - Function type that returns `any`.
+            </p>
+          </section>
+
+          <section>
+            <h2>Type Inferencing</h2>
+
+            <p data-markdown>
+              Type inferencing makes TypeScript much simpler to use and can easily cut down on the verbosity of typing types.
+
+              ```ts
+              function takesCallback (cb: (error: Error) => any) {
+                return cb(null)
+              }
+
+              takesCallback(function (err) {
+                // TypeScript knows `err` is a type of `Error`
+              })
+              ```
+            </p>
+          </section>
+
+          <section>
+            <h2>Interfaces</h2>
+
+            <p data-markdown>
+              Interfaces are the way to type anything more complicated than our basic types. It's a similar syntax to JavaScript objects, except the values are types and keys are expanded to type anything in JavaScript.
+
+              ```ts
+              interface MyInterface {
+                (): boolean; // It's a function that returns a `boolean`.
+                value: string; // Has a property which is a `string`.
+                method (): number; // Has a method that returns a `number`.
+              }
+              ```
+
+              ```ts
+              interface Dictionary {
+                [key: string]: string; // Any key/value is a string.
+              }
+              ```
+            </p>
+          </section>
+
+          <section>
+            <h2>Type Assertions</h2>
+
+            <p data-markdown>
+              Overrides the inferred/known type to what you know it is. Purely available for when you know you're smarter than the compiler, so treat it with caution as the compiler will not second guess you on it.
+
+              ```ts
+              interface Foo {
+                x: number
+                y: number
+              }
+
+              var foo = {} as Foo // I know this object is a `Foo`.
+              foo.x = 10
+              foo.y = 20
+
+              // Prefer explicit types, where possible.
+              var foo: Foo = {
+                // The compiler will now error until `x` and `y` are fulfilled.
+              }
+              ```
+            </p>
+          </section>
+
+          <section>
+            <h2>Type Shorthand</h2>
+
+            <p data-markdown>
+              Types can also be used shorthand, in parameters and with the `type` keyword.
+
+              ```ts
+              type HelloWorld = string
+              type PrimitiveArray = Array&lt;string | number | boolean&gt;
+
+              function getLabel (obj: { label: string }): string {
+                return obj.label
+              }
+              ```
+            </p>
+          </section>
+
+          <section>
+            <h2>Extending and Implementing Interfaces</h2>
+
+            <p data-markdown>
+              Interfaces can extended from other interfaces. Classes can extend from other classes. Classes can also implement an interface.
+
+              ```ts
+              interface Animal {
+                legs: number
+              }
+
+              interface Bird extends Animal {
+                wings: number
+              }
+
+              class BirdClass implements Bird {
+                legs = 2
+                wings = 2
+              }
+              ```
+            </p>
+          </section>
+
+          <section>
+            <h2>User Type Guards</h2>
+
+            <p data-markdown>
+              Type guards define a function that implements a runtime check for a type. For example, checking if we have a bird.
+
+              ```ts
+              function isBird (obj: Animal): obj is Bird {
+                return obj.wings === 2
+              }
+              ```
+
+              **Tip:** This lets us narrow ambiguous types in `if` conditions.
+            </p>
+          </section>
+
+          <section>
+            <h2>Generics</h2>
+
+            <p data-markdown>
+              Generics are reuseable interfaces that accept _any_ type.
+
+              ```ts
+              function identity &lt;T&gt; (arg: T): T {
+                return arg
+              }
+
+              const output = identity('myString') //=> `typeof output` is `string`, inferred from input type `T`.
+
+              const output = identity&lt;string&gt;('myString') // Explicit `T` type.
+              ```
+            </p>
+          </section>
+
+          <section>
+            <h2>Union Types</h2>
+
+            <p data-markdown>
+              Union types express a value that can be one of many types.
+
+              ```ts
+              const value: string | string[] = 'test'
+
+              console.log(value.length) // Works because `.length` exists on `string` and `string[]`.
+              ```
+            </p>
+          </section>
+
+          <section>
+            <h2>Intersection Types</h2>
+
+            <p data-markdown>
+              Intersection types express a value that is of all types.
+
+              ```ts
+              function extend &lt;A, B&gt; (a: A, b: B): A &amp; B {
+                Object.keys(b).forEach(key => {
+                  a[key] = b[key]
+                })
+
+                return a as A &amp; B
+              }
+
+              const output = extend({ x: 10 }, { y: 20 }) //=> `typeof output` is `{ x: number } &amp; { y: number }`
+              ```
+            </p>
+          </section>
+
+          <section>
+            <h2>Tuples</h2>
+
+            <p data-markdown>
+              Tuples restrict arrays to elements of a known length and type.
+
+              ```ts
+              let x: [string, number]
+              // Initialize it.
+              x = ['hello', 10] // OK.
+              // Initialize it incorrectly.
+              x = [10, 'hello'] // Error.
+
+              console.log(tuple[0].substr(1))
+              console.log(tuple[1].substr(1))
+              //=> Error: Property 'substr' does not exist on type 'number'.
+              ```
+            </p>
+          </section>
+
+          <section>
+            <h2 data-markdown>`typeof`</h2>
+
+            <p data-markdown style="font-size:85%">
+              `typeof` takes a value and produces the type the value has.
+
+              ```ts
+              import * as TS from 'typescript'
+
+              declare function require (module: string): any
+
+              function eventually () {
+                var ts: typeof TS = require('typescript')
+              }
+              ```
+
+              **Tip:** `typeof` only works on values. You cannot use `typeof` for generics (I know I've tried). To achieve this, use an interface.
+
+              ```ts
+              class MyClass { bar: string }
+
+              function create &lt;T&gt; (Constructor: { new (): T }) {
+                return new Constructor()
+              }
+
+              var c = create(MyClass) //=> Has correct type signature through generic type inference.
+              ```
+            </p>
+          </section>
+
+          <section>
+            <h2 data-markdown>`this`</h2>
+
+            <p data-markdown>
+              The type expression, `this`, is used to represent the type of the current execution context.
+
+              ```ts
+              class Calculator {
+                constructor (protected value: number = 0) {}
+
+                result (): number {
+                  return this.value
+                }
+
+                add (operand: number) {
+                  this.value += operand
+                  return this
+                }
+
+                subtract(operand: number) {
+                  this.value -= operand
+                  return this
+                }
+
+              }
+
+              var x = new Calculator(10)
+                .add(5)
+                .result()
+              ```
+            </p>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h2>JavaScript (with TypeScript)</h2>
+
+            <p data-markdown>
+              ```ts
+              // Use `import` instead of `var` to import type information with runtime.
+              import ts = require(&apos;typescript&apos;)
+
+              var arr = [1, 2, 3] //=> Inferred as `number[]`.
+
+              arr.map(function (value) {
+                console.log(value) // Notice that `value` is known to be a number. There&apos;s no types even specified yet.
+              })
+
+              // Explicit types of parameters, the return is inferred as `number`.
+              function sum (a: number, b: number) {
+                return a + b
+              }
+
+              var result = arr.reduce(sum)
+
+              console.log(result * 10)
+
+              // Use an interface provided by a third-party (`ts.Map` is a generic dictionary).
+              var obj: ts.Map&lt;number&gt; = {
+                a: 10,
+                b: 20,
+                c: 30,
+                // d: &apos;foo&apos; // Error.
+              }
+
+              Object.keys(obj).forEach(function (key) {
+                console.log(obj[key])
+              })
+              ```
+            </p>
+          </section>
+
+          <section>
+            <h2 data-markdown>`let` and `const`</h2>
+
+            <p data-markdown>
+              Always prefer `const` over `let`, and avoid using `var`. TypeScript warns when the scope/assignability/etc is wrong.
+
+              ```ts
+              // Both `let` and `const` are ES6 additions which use block scoping, instead of the traditional function scope used by `var`.
+
+              // Using `const` helps greatly with readability and understandability. Any new programmer immediately knows this value is immutible - it won't be changed further down in the execution.
+              const value = 'test'
+
+              // value = 'new value' //=> Error: Left-hand side of assignment expression cannot be a constant.
+
+              const array = [1, 2, 3]
+
+              // I recommend only using `let` when the value is not immutable - such as in a loop.
+              for (let i = 0; i &lt; array.length; i++) {
+                console.log(array[i])
+              }
+
+              // Can not use `let` variables outside of the block scope.
+              // console.log(i) //=> Error: Cannot find name 'i'.
+              ```
+            </p>
+          </section>
+
+          <section>
+            <h2>Classes</h2>
+
+            <p data-markdown>
+              Classes provide familiar OO short hand for prototype setup, with static properties, constuctor function and `super` keyword.
+
+              ```ts
+              interface Implementation {
+                bar: string
+              }
+
+              class Clazz implements Implementation {
+                bar: string // Omitting this will error, since implementation would be incorrect.
+
+                // Only child classes can access `foo`. Note that this _does not_ modify the JS output, so JavaScript users could still access this freely.
+                protected foo: string
+
+                // Use the `public` modifier to automatically set `this.name = name`. Only available in constructors, can also be `private` or `protected`.
+                constructor (public myName: string) {
+                  // Type `foo` must be specified before usage.
+                  this.foo = name.toUpperCase()
+                }
+
+                // Methods are specified using this syntax of `&lt;name&gt; (&lt;parameters&gt;) { &lt;body&gt; }`.
+                method () {
+                  return true
+                }
+
+                // You can also use getters as setters.
+                get value () {
+                  return this.foo
+                }
+
+                // Static methods are available on the constructor function.
+                static method () {
+                  return 'wow, cool'
+                }
+              }
+
+              var c = new Clazz('hello')
+
+              c.myName // OK.
+              // c.foo //=> Error: Property 'foo' is protected and only accessible within class 'Clazz' and its subclasses.
+              c.value //=> "HELLO".
+
+              Clazz.method() //=> "wow, cool".
+
+              // ES6 extending classes. All this continues working when targeting ES5 and ES3 too!
+              class SubClazz extends Clazz {
+
+                constructor () {
+                  super('wow') // `super` calls the constructor we inherited from with the current context. In this case, it's `Clazz`.
+
+                  console.log(this.foo) // We can access `foo` too!
+                }
+
+              }
+
+              // Following the ES6 spec for classes, subclasses can access superclass static methods.
+              SubClazz.method() //=> "wow, cool".
+              ```
+            </p>
+          </section>
+
+          <section>
+            <h2>Arrow Functions</h2>
+
+            <p data-markdown>
+              Arrow functions are normal JavaScript function, except `this` is lexically scoped.
+
+              ```ts
+              class Foo {
+
+                someMethod (arr: string[]) {
+                  arr.forEach(x =&gt; this.log(x))
+
+                  // Usually you&apos;d have to `var self = this` and use `self.log(x)` in the callback, which is a much bigger function expression.
+                }
+
+                log (value: string) {
+                  console.log(value)
+                }
+
+              }
+
+              // Arrow functions can follow these syntaxes:
+              // * `&lt;parameter&gt; =&gt; &lt;expression&gt;`
+              // * `(&lt;parameters?&gt;) =&gt; &lt;expression&gt;`
+              // * `&lt;parameter&gt; =&gt; { &lt;body&gt; }`
+              // * `(&lt;parameters?&gt;) =&gt; { &lt;body&gt; }`
+              // When used with an expression, the result of the expression is returned.
+
+              const help = () =&gt; &apos;Help me, please!&apos;
+
+              help() //=&gt; &quot;Help me, please!&quot;
+
+              // Tip: Use the arrow function with libraries that use `this`, such as anything related to events in the browsers (jQuery, Angular, React).
+
+              const React: any
+
+              class ReactElement {
+
+                doAThing () {}
+
+                render () {
+                  return React.createElement(&apos;div&apos;, {
+                    // Using a function is much cheaper than binding.
+                    onClick: () =&gt; this.doAThing()
+                  })
+                }
+
+              }
+              ```
+            </p>
+
+            <aside class="notes">
+              Arrow functions are normal JavaScript functions, except they keep the `this` context during execution. Extremely useful inside class methods that call to other async functions.
+            </aside>
+          </section>
+
+          <section>
+            <h2>Template Strings</h2>
+
+            <p data-markdown>
+              Template strings do away with manual string concatenation of variables within strings. In template strings, TypeScript will continue doing type checking for you.
+
+              ```ts
+              const a = 55
+              const b = 76
+
+              console.log(`${a} ^ ${b} = ${Math.pow(a, b)}`)
+              ```
+            </p>
+          </section>
+
+          <section>
+            <h2>Object Literals</h2>
+
+            <p data-markdown>
+              Object literals come with new shorthands.
+
+              ```ts
+              const nameProperty = 'name'
+
+              const obj = {
+                // Getter.
+                get hello () {
+                  return `${this.phrase} ${this.name}!`
+                },
+                // Setter.
+                set hello (phrase: string) {
+                  this.phrase = phrase
+                },
+                // Method.
+                add (a: number, b: number) {
+                  return a + b
+                },
+                // Property with arrow function.
+                thisIsHandySometimes: () => 'echo',
+                // Property.
+                phrase: 'Hello',
+                // Computed property.
+                [nameProperty]: 'Blake'
+              }
+
+              console.log(obj.hello) //=> "Hello Blake!"
+              console.log(obj.add(1, 2)) //=> 3
+
+              // Using a `setter`.
+              obj.hello = 'G\'day'
+
+              console.log(obj.hello) //=> "G'day Blake!"
+
+              console.log(obj.thisIsHandySometimes()) //=> "echo"
+              ```
+            </p>
+          </section>
+
+          <section>
+            <h2>Destructuring</h2>
+
+            <p data-markdown>
+              Destructuring is the ability to take an object, or array, and directly assign the properties to variables.
+
+              ```ts
+              const data = {
+                fullName: 'Blake Embrey',
+                email: 'hello@blakeembrey.com',
+                luckyNumber: 3
+              }
+
+              // Object destructuring. Pick the properties you want.
+              const { luckyNumber } = data
+
+              console.log(luckyNumber)
+
+              const arrayData = [154, 'Blake', true]
+
+              // Array destructuring. Pick the elements you want.
+              const [,me] = arrayData
+
+              console.log(me)
+
+              // Object and array destructuring makes it easier to return multiple pieces of data back to the user too!
+
+              function lookup (name: string) {
+                const username = 'blakeembrey'
+                const email = 'hello@blakeembrey.com'
+
+                return [username, email]
+              }
+
+              // However, an object might be clearer here, so judgement is wise.
+              ```
+            </p>
+          </section>
+
+          <section>
+            <h2>Default and Rest Parameters</h2>
+
+            <p data-markdown>
+              Default and rest parameters make overloading easier.
+
+              ```ts
+              // Rest parameters must always be the last parameter defined.
+              function add (...numbers: number[]) {
+                return numbers.reduce(function (sum, number) {
+                  return sum + number
+                })
+              }
+
+              // The rest parameter will handle any number of arguments we pass to it.
+              console.log(add(1, 2, 3, 4, 5))
+
+              interface MultiDimensionArray &lt;T&gt; {
+                [key: number]: T | MultiDimensionArray&lt;T&gt;
+                length: number
+              }
+
+              function flatten &lt;T&gt; (array: MultiDimensionArray&lt;T&gt;, result: T[] = []): T[] {
+                for (let i = 0; i &lt; array.length; i++) {
+                  if (Array.isArray(array[i])) {
+                    flatten(array[i] as T[], result)
+                  } else {
+                    result.push(array[i] as T)
+                  }
+                }
+
+                return result
+              }
+
+              // Notice we are omitting the second argument, it&apos;s inherently optional when a default parameter is used.
+              console.log(flatten([1, [2, 3, [4, 5], 6, 7], 8])) //=&gt; [ 1, 2, 3, 4, 5, 6, 7, 8 ]
+
+              // But we can set it if we wish.
+              console.log(flatten([[[[[[10]]]]]], [1, 5])) //=> [ 1, 5, 10 ]
+              ```
+            </p>
+          </section>
+
+          <section>
+            <h2>Spread Operator</h2>
+
+            <p data-markdown>
+              The spread operator is the opposite side of the rest operator, allowing you to pass multiple arguments by "expanding" the variable.
+
+              ```ts
+              const arr1 = [1, 2, 3]
+              const arr2 = [4, 5, 6]
+
+              arr1.push(...arr2)
+
+              console.log(arr1) //=> [ 1, 2, 3, 4, 5, 6 ]
+
+              var parts = ['shoulders', 'knees']
+              var lyrics = ['head', ...parts, 'and', 'toes']
+
+              console.log(lyrics) //=> [ 'head', 'shoulders', 'knees', 'and', 'toes' ]
+
+              function add (...nums: number[]): number {
+                return nums.reduce((x, y) => x + y)
+              }
+
+              const numbers = [25, -15]
+
+              // Multiple spread operator usages.
+              console.log(add(1, ...numbers, 66, ...[-10])) //=> 67
+              ```
+            </p>
+          </section>
+
+          <section>
+            <h2>Iterators</h2>
+
+            <p data-markdown>
+              Iterators define a way to take a standard form object and iterate it. The only requirement of an iterator is `next()`, which returns an object of `{ value: any; done: boolean }`.
+
+              ```ts
+              for (let value of [1, 2, 3]) {
+                console.log(value)
+              }
+
+              for (let char of 'test') {
+                console.log(char)
+              }
+              ```
+
+              **Tip:** In ES6, iterators have been implemented on native types. You can define an iterable instance by implementing `Symbol.iterator`.
+            </p>
+          </section>
+
+          <section>
+            <h2>Decorators</h2>
+
+            <p data-markdown>
+              Decorators are experimental, but allow us to wrap methods and classes syntactically.
+
+              ```ts
+              function debug (target: any, name: string, descriptor: any) {
+                // Wrap the descriptor function.
+                descriptor.value = function (...args: any[]) {
+                  console.log.call(console, 'Called with:', ...args)
+                }
+              }
+
+              class MyClass {
+
+                @debug
+                method (name: string, isHappy: boolean) {
+                  // Do stuff...
+                }
+
+              }
+
+              new MyClass().method('Blake', true)
+              ```
+            </p>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h2>Deeper</h2>
+
+            <p data-markdown>
+              Wondering about what else is involved?
+            </p>
+          </section>
+
+          <section>
+            <h2 data-markdown>`lib.d.ts`</h2>
+
+            <p data-markdown>
+              Although you might not notice it, TypeScript ships with a file called [`lib.d.ts`](https://github.com/Microsoft/TypeScript/blob/master/lib/lib.d.ts). It's huge (currently ~15750 SLOC), and types everything available in JavaScript (including DOM interactions).
+
+              TypeScript interfaces are open ended, which means we can merge additional type information with the global interfaces.
+            </p>
+          </section>
+
+          <section>
+            <h2 data-markdown>`.d.ts` Files</h2>
+
+            <p data-markdown>
+              Files ending in `.d.ts` are TypeScript definition files. Sometimes generated by the TypeScript compiler, they can also be hand-written. If you were to combine a `.js` and `.d.ts` file, the result is a TypeScript file (runtime + types).
+
+              This separation of the type system from runtime allows us to progressively type JavaScript files, as well use JavaScript libraries with type safety, autocompletion, documentation, etc. (assuming the type definition is correct).
+            </p>
+          </section>
+
+          <section>
+            <h2>Ambient Declarations</h2>
+
+            <p data-markdown>
+              Ambient declarations are just another `.d.ts` file, but without any `import` or `export`. Remember that this makes the file "global". It's how `lib.d.ts` works! It also enabled the community to come together and type thousands of JavaScript libraries and environments. See [DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped) and [`node.d.ts`](https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/node/node.d.ts).
+
+              You can write your own ambient declarations and reference it in `tsconfig.json`, making the types appear throughout your program.
+            </p>
+          </section>
+
+          <section>
+            <h2>Typings</h2>
+
+            <p data-markdown>
+              Typings is a project that bridges the gap between JavaScript and TypeScript, providing a way to install definitions created by the community.
+
+              ```ts
+              typings install arrify
+              typings search react --ambient
+              ```
+
+              It separates the concept of ambient modules (modules that type the environment) and external modules (modules that type a piece of JavaScript, for example, on NPM).
+
+              **Tip:** The `typings` registry is indexing DefinitelyTyped, but DefinitelyTyped definitions are "ambient". You can search and install those definitions using the `--ambient` flag.
+            </p>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h2>Integration</h2>
+
+            <p data-markdown>
+              The simplest form of TypeScript is the CLI, `tsc`. However, it's often desirable to integrate this into existing tooling and build systems.
+            </p>
+          </section>
+
+          <section>
+            <h2>Node</h2>
+
+            <p data-markdown>
+              You should always compile TypeScipt before executing it. However, sometimes, it's useful for demos or experiments or tests to skip compilation and just run TypeScript.
+
+              ```sh
+              npm i -g ts-node
+              npm i -g typescript
+
+              ts-node script.ts
+              ```
+            </p>
+          </section>
+
+          <section>
+            <h2>Webpack</h2>
+
+            <p data-markdown>
+              If you're a Webpack user, use [`ts-loader`](https://github.com/TypeStrong/ts-loader). To add this to your Webpack project, you must as `.ts` (and/or `.tsx`) to your resolve extensions, as well as ts to your module loaders.
+
+              ```js
+              module.exports = {
+                entry: './app.ts',
+                output: {
+                  filename: 'bundle.js'
+                },
+                resolve: {
+                  // Add `.ts` and `.tsx` as resolvable extensions.
+                  extensions: ['', '.ts', '.tsx', '.js']
+                },
+                module: {
+                  loaders: [
+                    { test: /\.tsx?$/, loader: 'ts' }
+                  ]
+                }
+              }
+              ```
+
+              **Tip:** `ts-loader` loads configuration from `tsconfig.json`.
+            </p>
+          </section>
+
+          <section>
+            <h2>Browserify</h2>
+
+            <p data-markdown>
+              If you're a Browserify user, use [`tsify`](https://github.com/TypeStrong/tsify). Use it as a plugin of Browserify (`browserify main.ts -p [ tsify --noImplicitAny ]`).
+
+              **Tip:** `tsify` also loads configuration from `tsconfig.json`.
+            </p>
+          </section>
+
+          <section>
+            <h2>Gulp</h2>
+
+            <p data-markdown>
+              If you're current workflow uses Gulp, you can use [`gulp-typescript`](https://github.com/ivogabe/gulp-typescript). It support the traditional Gulp pipeline with support for configuration via `tsconfig.json`.
+            </p>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <img src="thank-you.gif">
+
+            <p>
+              So, we made it this far! I wasn't sure we would. I hope you learned something about TypeScript, and will try it for yourself. There's a lot you can learn from a typed language.
+            </p>
+          </section>
+
+          <section>
+            <h1>Q &amp; A</h1>
+          </section>
+        </section>
+      </div>
+    </div>
+
+    <script src="bundle.js"></script>
+  </body>
+</html>
